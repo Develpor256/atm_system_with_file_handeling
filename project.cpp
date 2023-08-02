@@ -1,19 +1,8 @@
 #include <iostream>
+#include <conio.h> // for password input as *
 #include <fstream>
-// #include <iomanip>
 #define maxlim 20 // The maximum data that will be stored in .txt file is set limit 20 rows
 using namespace std;
-
-// using std::cout;
-// using std::cin;
-// using std::string;
-// using std::ios;
-// using std::getline;      // Using these in place of using namespace std will make compiler fast
-// using std::ws;
-// using std::endl;
-// using std::ifstream;
-// using std::ofstream;
-// using std::to_string;
 
 string acc_in_use; // When user is authenticated, his account number will be stored in it and this can be used anywhere
 
@@ -71,6 +60,7 @@ void new_account();
 void data_update();
 void existing();
 bool authentication();
+string input_password(string x);
 int show_balance();
 int deposit();
 int withdraw();
@@ -127,52 +117,6 @@ int main()
     return 0;
 }
 
-template <typename T>
-T input(string x)
-{
-    T y;
-    cout << x;
-    cin >> y;
-    return y;
-}
-string input(string x)
-{
-    string y;
-    cout << x;
-    getline(cin >> ws, y);
-    return y;
-}
-string new_password()
-{
-    string pass = "";
-    string confirm_pass = "";
-    do
-    {
-        cout << "Set a new password: ";
-        cin >> pass;
-        cout << "Confirm password: ";
-        cin >> confirm_pass;
-        if (pass == confirm_pass)
-        {
-            return pass; // if password match, get out of function
-        }
-        cout << "Incorrect password\n";
-
-    } while (pass != confirm_pass);
-    return ""; // it has nothing to do with code but I have just written it so that compiler does not give warning
-}
-int isAmount(int x)
-{
-    if (x < 0) // If user enter amount with negative sign
-    {
-        cout << "This is not a valid amount\n";
-        return 0;
-    }
-    else
-    {
-        return x;
-    }
-}
 void new_account()
 {
     string account_number = input("Enter your account number: ");
@@ -198,68 +142,55 @@ void new_account()
     backend << '\n' // this is necessary bcz otherwise data will be saved in the same line and you can't also put it at end of line
             << account_number << ',' << name << ',' << password << ',' << balance << ',';
 }
-bool authentication()
+
+template <typename T>
+T input(string x)
 {
-    import_data();
-    string acc_num = input("Enter your account number: ");
-    int acc_check = 0;
-    for (int i = 0, j = 0; i < rows; i++)
-    {
-        if (data[i][j] == acc_num)
-        {
-            acc_in_use = data[i][j];
-            acc_check++;
-        }
-    }
-    if (acc_check == 0)
-    {
-        system("cls");
-        cout << "Record not found!\nPlease activate your card instead\n";
-        return false;
-    }
-    else if (acc_check == 1)
-    {
-        string pass;
-        cout << "Enter your password: ";
-        cin >> pass;
-        int pass_check = 0;
-        for (int i = 0, j = 2; i < rows; i++)
-        {
-            if (data[i][j] == pass)
-            {
-                pass_check++;
-            }
-        }
-        if (pass_check == 1)
-        {
-            system("cls");
-            return true;
-        }
-        else if (pass_check == 0)
-        {
-            system("cls");
-            cout << "Invalid Password\n";
-            return false;
-        }
-    }
-    return true;
+    T y;
+    cout << x;
+    cin >> y;
+    return y;
 }
-void data_update() // export global 2D array to .txt file
+string input(string x)
 {
-    ofstream backend;
-    backend.open("backend.txt");
-    for (int i = 0; i < rows; i++)
+    string y;
+    cout << x;
+    getline(cin >> ws, y);
+    return y;
+}
+string new_password()
+{
+    string pass = "";
+    string confirm_pass = "";
+    do
     {
-        for (int j = 0; j < 4; j++)
+        pass = input_password("Set a new password: ");
+        cout << endl;
+        
+        confirm_pass = input_password("Confirm password: ");
+        cout << endl;
+        if (pass == confirm_pass)
         {
-            backend << data[i][j] << ',';
+            return pass; // if password match, get out of function
         }
-        if (i < rows - 1) // if we dont do this after last row, an empty row will be added
-        {
-            backend << endl;
-        }
+        cout << "Incorrect password\n";
+
+    } while (pass != confirm_pass);
+    return ""; // it has nothing to do with code but I have just written it so that compiler does not give warning
+}
+int isAmount(int x)
+{
+    if (x < 0) // If user enter amount with negative sign
+    {
+        cout << "This is not a valid amount\n";
+        return 0;
+    }
+    else
+    {
+        return x;
     }
 }
+
 void existing()
 {
     if (authentication() == false)
@@ -331,6 +262,80 @@ void existing()
 
     } while (choice != 4);
 }
+
+bool authentication()
+{
+    import_data();
+    string acc_num = input("Enter your account number: ");
+    int acc_check = 0;
+    for (int i = 0, j = 0; i < rows; i++)
+    {
+        if (data[i][j] == acc_num)
+        {
+            acc_in_use = data[i][j];
+            acc_check++;
+        }
+    }
+    if (acc_check == 0)
+    {
+        system("cls");
+        cout << "Record not found!\nPlease activate your card instead\n";
+        return false;
+    }
+    else if (acc_check == 1)
+    {
+        string pass = input_password("Enter your password: ");
+        cout << endl;
+        int pass_check = 0;
+        for (int i = 0, j = 2; i < rows; i++)
+        {
+            if (data[i][j] == pass)
+            {
+                pass_check++;
+            }
+        }
+        if (pass_check == 1)
+        {
+            system("cls");
+            return true;
+        }
+        else if (pass_check == 0)
+        {
+            system("cls");
+            cout << "Invalid Password\n";
+            return false;
+        }
+    }
+    return true;
+}
+
+string input_password(string x)
+{
+    char password[15];
+    int i = 0;
+    char ch;
+    cout << x;
+    // Loop to read characters until Enter (ASCII 13) is pressed
+    while ((ch = _getch()) != 13)
+    {
+        // Backspace (ASCII 8) handling
+        if (ch == 8 && i > 0)
+        {
+            cout << "\b \b"; // Move the cursor back, print a space to erase the character, move the cursor back again
+            i--;
+        }
+        else
+        {
+            password[i] = ch;
+            i++;
+            cout << "*"; // Display an asterisk (*) instead of the actual character
+        }
+    }
+    password[i] = '\0'; // Null-terminate the password string
+
+    return password;
+}
+
 int show_balance()
 {
     int balance;
@@ -387,6 +392,23 @@ void balance_updation(int balance)
         if (data[i][j] == acc_in_use)
         {
             data[i][3] = to_string(balance);
+        }
+    }
+}
+
+void data_update() // export global 2D array to .txt file
+{
+    ofstream backend;
+    backend.open("backend.txt");
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            backend << data[i][j] << ',';
+        }
+        if (i < rows - 1) // if we dont do this after last row, an empty row will be added
+        {
+            backend << endl;
         }
     }
 }
