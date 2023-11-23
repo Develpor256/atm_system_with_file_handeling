@@ -204,11 +204,11 @@ void existing()
         cin.clear();
         fflush(stdin);
 
-        for (int i = 0, j = 2; i < rows; i++) // printing username
+        for (int i = 0, j = 0; i < rows; i++) // printing username
         {
             if (data[i][j] == acc_in_use)
             {
-                cout << "Welcome " << data[i][j] << endl;
+                cout << "Welcome " << data[i][1] << endl;
             }
         }
 
