@@ -119,8 +119,8 @@ int main()
 
 void new_account()
 {
-    string account_number = input("Enter your account number: ");
     import_data(); // importing data in global 2D array
+    string account_number = input("Enter your account number: ");
 
     for (int i = 0; i <= rows; i++)
     {
@@ -137,10 +137,35 @@ void new_account()
     string password = new_password();
     int balance = isAmount(input<int>("Enter the amount you want to deposite: Rs."));
 
+    bool fileIsEmpty;
+    /////////////////////////////////////////////////////////
+    ifstream file("backend.txt");
+    // Check if the file is empty
+    file.seekg(0, ios::end); // Move to the end of the file
+    streampos fileSize = file.tellg();
+    if (fileSize == 0)
+    {
+        fileIsEmpty = true;
+    }
+    else
+    {
+        fileIsEmpty = false;
+    }
+    // Close the file
+    file.close();
+    /////////////////////////////////////////////////////////
+
     ofstream backend;
     backend.open("backend.txt", ios::app);
-    backend << '\n' // this is necessary bcz otherwise data will be saved in the same line and you can't also put it at end of line
-            << account_number << ',' << name << ',' << password << ',' << balance << ',';
+    if (fileIsEmpty)
+    {
+        backend << account_number << ',' << name << ',' << password << ',' << balance << ',';
+    }
+    else
+    {
+        backend << endl // go to next line then enter data
+                << account_number << ',' << name << ',' << password << ',' << balance << ',';
+    }
 }
 
 template <typename T>
@@ -166,7 +191,7 @@ string new_password()
     {
         pass = input_password("Set a new password: ");
         cout << endl;
-        
+
         confirm_pass = input_password("Confirm password: ");
         cout << endl;
         if (pass == confirm_pass)
@@ -208,7 +233,9 @@ void existing()
         {
             if (data[i][j] == acc_in_use)
             {
-                cout << "Welcome " << data[i][1] << endl;
+                cout << endl
+                     << endl
+                     << data[i][1] << "'s Account" << endl;
             }
         }
 
